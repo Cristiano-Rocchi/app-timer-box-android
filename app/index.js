@@ -31,37 +31,70 @@ export default function SetupScreen() {
 
         {/* --- INIZIO AREA CARD SETUP --- */}
         {/* Qui inserirai le tue Card personalizzate (es. Round, Work, Rest) */}
+        <View style={styles.cards}>
+          <View style={styles.card}>
+            {/* Contenuto della Card per i Round */}
 
-        <View style={styles.card}>
-          {/* Contenuto della Card per i Round */}
-          <View style={styles.cardImg}>
-            {/* Immagine o icona per i Round */}
-            <Image
-              source={ProvaImg}
-              style={styles.imageCard}
-              resizeMode="contain"
-            />
-          </View>
-          <View style={styles.cardContent}>
-            <View style={styles.cardTimer}>
-              <Text>00:30</Text>
-              <View style={styles.cardInfo}>
-                <Text>INFO</Text>
+            <View style={styles.cardContent}>
+              <View style={styles.cardSettings}>
+                <Text style={styles.cardInfo}>INFO</Text>
+                <Text style={styles.cardTimer}>00:30</Text>
+                <View style={styles.cardButtons}>
+                  <Text> BOTTONE- </Text>
+                  <Text> BOTTONE+ </Text>
+                </View>
+              </View>
+              <View style={styles.cardImg}>
+                <Image
+                  source={ProvaImg}
+                  style={styles.imageCard}
+                  resizeMode="cover"
+                />
               </View>
             </View>
-            <View style={styles.cardButtons}>
-              <Text> BOTTONE- </Text>
-              <Text> BOTTONE+ </Text>
+          </View>
+          <View style={styles.card}>
+            {/* Contenuto della Card per i Round */}
+
+            <View style={styles.cardContent}>
+              <View style={styles.cardInfo}>
+                <Text>INFO</Text>
+                <Text style={styles.cardTimer}>00:30</Text>
+                <View style={styles.cardButtons}>
+                  <Text> BOTTONE- </Text>
+                  <Text> BOTTONE+ </Text>
+                </View>
+              </View>
+              <View style={styles.cardImg}>
+                <Image
+                  source={ProvaImg}
+                  style={styles.imageCard}
+                  resizeMode="cover"
+                />
+              </View>
             </View>
           </View>
-        </View>
+          <View style={styles.card}>
+            {/* Contenuto della Card per i Round */}
 
-        <View style={styles.card}>
-          {/* Contenuto della Card per il Tempo di Lavoro */}
-        </View>
-
-        <View style={styles.card}>
-          {/* Contenuto della Card per il Tempo di Riposo */}
+            <View style={styles.cardContent}>
+              <View style={styles.cardInfo}>
+                <Text>INFO</Text>
+                <Text style={styles.cardTimer}>00:30</Text>
+                <View style={styles.cardButtons}>
+                  <Text> BOTTONE- </Text>
+                  <Text> BOTTONE+ </Text>
+                </View>
+              </View>
+              <View style={styles.cardImg}>
+                <Image
+                  source={ProvaImg}
+                  style={styles.imageCard}
+                  resizeMode="cover"
+                />
+              </View>
+            </View>
+          </View>
         </View>
 
         {/* --- FINE AREA CARD SETUP --- */}

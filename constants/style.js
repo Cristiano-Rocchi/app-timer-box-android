@@ -8,7 +8,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     // 1.SFONDO GENERALE
-    padding: 36,
+    paddingHorizontal: 15,
   },
   scrollContainer: {
     // 2. CONTENUTO SCROLLABILE
@@ -24,28 +24,52 @@ export const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     color: "#FF0000",
+  }, // 4. CARDS
+  cards: {
+    flex: 1, // Il contenitore occupa tutto lo spazio centrale
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   card: {
-    // 4. CARDS
-    flexDirection: "row",
-    alignItems: "center",
+    flex: 1, // Ogni card si spartisce lo spazio in parti uguali
+
+    width: "100%",
+    marginVertical: 5, // Un po' di distacco tra loro
+    backgroundColor: "#f0f0f0",
+    paddingVertical: 10,
   },
   cardImg: {
-    //immagine
-    flex: 4,
+    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
   },
   imageCard: {
-    width: 50,
-    height: 50,
+    //immagine
+    width: 100,
+    height: "100%",
   },
   cardContent: {
-    //contenuto della card
-    flex: 8,
-    alignItems: "center",
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  cardSettings: {
+    flex: 9,
+  },
+  cardInfo: {},
+
+  cardTimer: {
+    // area timer
+    fontFamily: "monospace",
+    fontSize: 50,
+    textAlign: "center",
+
+    fontVariant: ["tabular-nums"],
+  },
+
+  cardButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "100%",
+    marginTop: 10,
   },
   buttonStart: {
     // Il rettangolo del bottone
