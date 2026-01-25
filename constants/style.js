@@ -9,6 +9,7 @@ export const styles = StyleSheet.create({
   container: {
     // 1.SFONDO GENERALE
     paddingHorizontal: 15,
+    paddingVertical: 20,
   },
   scrollContainer: {
     // 2. CONTENUTO SCROLLABILE
@@ -21,7 +22,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     // Stile per il testo TITOLO
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#FF0000",
   }, // 4. CARDS
@@ -34,27 +35,36 @@ export const styles = StyleSheet.create({
     flex: 1, // Ogni card si spartisce lo spazio in parti uguali
 
     width: "100%",
-    marginVertical: 5, // Un po' di distacco tra loro
+    marginVertical: 5,
     backgroundColor: "#f0f0f0",
-    paddingVertical: 10,
+    paddingVertical: 5,
   },
   cardImg: {
-    flex: 1,
-    alignItems: "center",
+    flex: 2,
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
   imageCard: {
     //immagine
-    width: 100,
+    width: 80,
     height: "100%",
   },
   cardContent: {
     flexDirection: "row",
-    alignItems: "center",
   },
   cardSettings: {
-    flex: 9,
+    flex: 8,
+    paddingVertical: 5,
   },
-  cardInfo: {},
+  cardTitle: {
+    backgroundColor: "#000000",
+    color: "#FFFFFF",
+    alignSelf: "flex-start",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    fontSize: 14,
+  },
 
   cardTimer: {
     // area timer
@@ -68,14 +78,15 @@ export const styles = StyleSheet.create({
   cardButtons: {
     flexDirection: "row",
     justifyContent: "center",
-    width: "100%",
-    marginTop: 10,
+    gap: 40,
+    marginTop: 5,
   },
-  buttonStart: {
-    // Il rettangolo del bottone
+  playButton: {
+    alignItems: "center",
+    marginVertical: 20,
   },
-  buttonText: {
-    // Il testo dentro il bottone
+  cardRoundSettings: {
+    display: "flex",
   },
   adBannerContainer: {
     // Lo spazio fisso in fondo per la pubblicità

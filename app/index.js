@@ -2,6 +2,9 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
+import Mbutton from "../assets/icons/Mbutton.svg";
+import Pbutton from "../assets/icons/Pbutton.svg";
+import Playbutton from "../assets/icons/Play.svg";
 import ProvaImg from "../assets/images/provaimg.jpg";
 import { styles } from "../constants/style";
 export default function SetupScreen() {
@@ -33,17 +36,25 @@ export default function SetupScreen() {
         {/* Qui inserirai le tue Card personalizzate (es. Round, Work, Rest) */}
         <View style={styles.cards}>
           <View style={styles.card}>
-            {/* Contenuto della Card per i Round */}
-
             <View style={styles.cardContent}>
+              {/* CAMBIO DA cardInfo A cardSettings */}
               <View style={styles.cardSettings}>
-                <Text style={styles.cardInfo}>INFO</Text>
-                <Text style={styles.cardTimer}>00:30</Text>
-                <View style={styles.cardButtons}>
-                  <Text> BOTTONE- </Text>
-                  <Text> BOTTONE+ </Text>
+                <Text style={styles.cardTitle}>DURATA DEL ROUND</Text>
+
+                {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
+                <View style={styles.centerGroup}>
+                  <Text style={styles.cardTimer}>00:30</Text>
+                  <View style={styles.cardButtons}>
+                    <TouchableOpacity>
+                      <Mbutton width={50} height={50} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <Pbutton width={50} height={50} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
+
               <View style={styles.cardImg}>
                 <Image
                   source={ProvaImg}
@@ -54,17 +65,25 @@ export default function SetupScreen() {
             </View>
           </View>
           <View style={styles.card}>
-            {/* Contenuto della Card per i Round */}
-
             <View style={styles.cardContent}>
-              <View style={styles.cardInfo}>
-                <Text>INFO</Text>
-                <Text style={styles.cardTimer}>00:30</Text>
-                <View style={styles.cardButtons}>
-                  <Text> BOTTONE- </Text>
-                  <Text> BOTTONE+ </Text>
+              {/* CAMBIO DA cardInfo A cardSettings */}
+              <View style={styles.cardSettings}>
+                <Text style={styles.cardTitle}>DURATA DEL ROUND</Text>
+
+                {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
+                <View style={styles.centerGroup}>
+                  <Text style={styles.cardTimer}>00:30</Text>
+                  <View style={styles.cardButtons}>
+                    <TouchableOpacity>
+                      <Mbutton width={50} height={50} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <Pbutton width={50} height={50} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
+
               <View style={styles.cardImg}>
                 <Image
                   source={ProvaImg}
@@ -75,17 +94,25 @@ export default function SetupScreen() {
             </View>
           </View>
           <View style={styles.card}>
-            {/* Contenuto della Card per i Round */}
-
             <View style={styles.cardContent}>
-              <View style={styles.cardInfo}>
-                <Text>INFO</Text>
-                <Text style={styles.cardTimer}>00:30</Text>
-                <View style={styles.cardButtons}>
-                  <Text> BOTTONE- </Text>
-                  <Text> BOTTONE+ </Text>
+              {/* CAMBIO DA cardInfo A cardSettings */}
+              <View style={styles.cardSettings}>
+                <Text style={styles.cardTitle}>NUMERO DI ROUND</Text>
+
+                {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
+                <View style={styles.centerGroup}>
+                  <Text style={styles.cardTimer}>00:30</Text>
+                  <View style={styles.cardButtons}>
+                    <TouchableOpacity>
+                      <Mbutton width={50} height={50} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <Pbutton width={50} height={50} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
+
               <View style={styles.cardImg}>
                 <Image
                   source={ProvaImg}
@@ -100,9 +127,11 @@ export default function SetupScreen() {
         {/* --- FINE AREA CARD SETUP --- */}
 
         {/* BOTTONE DI AVVIO (PLAY/START) */}
-        <TouchableOpacity style={styles.buttonStart} onPress={handleStart}>
-          <Text style={styles.buttonText}>INIZIA ALLENAMENTO</Text>
-        </TouchableOpacity>
+        <View style={styles.playButton}>
+          <TouchableOpacity>
+            <Playbutton width={50} height={50} />
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
       {/* --- AREA BANNER PUBBLICITARIO --- */}
