@@ -1,30 +1,46 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+
+import BackgroundView from "../components/BackgroundView";
 
 import Mbutton from "../assets/icons/Mbutton.svg";
 import Pbutton from "../assets/icons/Pbutton.svg";
 import Playbutton from "../assets/icons/Play.svg";
-import ProvaImg from "../assets/images/provaimg.jpg";
+import RoundImg from "../assets/images/round.webp";
+import LavoroImg from "../assets/images/tempolavoro.webp";
+import RiposoImg from "../assets/images/temporiposo.webp";
 import { styles } from "../constants/style";
+import { useTimerSetup } from "../hooks/TimerSetup";
 export default function SetupScreen() {
   const router = useRouter();
 
-  // Stati per gestire i dati dell'allenamento
-  const [rounds, setRounds] = useState("12");
-  const [workTime, setWorkTime] = useState("180");
-  const [restTime, setRestTime] = useState("60");
+  const workTimer = useTimerSetup(30, true, 5, 3599); // MM:SS, min 5s, max 59:59
+  const restTimer = useTimerSetup(30, true, 5, 3599); // MM:SS, min 5s, max 59:59
+  const roundCounter = useTimerSetup(5, false, 1, 99); // Numero, min 1, max 99
+
+  // Calcolo dinamico durata totale
+  const totalSecs = Math.max(
+    0,
+    (workTimer.value + restTimer.value) * roundCounter.value - restTimer.value,
+  );
+
+  const totalMins = Math.floor(totalSecs / 60);
+  const totalRemainingSecs = totalSecs % 60;
 
   const handleStart = () => {
     // Logica per navigare al timer passando i dati
     router.push({
-      pathname: "/timer",
-      params: { rounds, workTime, restTime },
+      pathname: "/pretimer",
+      params: {
+        rounds: roundCounter.value,
+        workTime: workTimer.value,
+        restTime: restTimer.value,
+      },
     });
   };
 
   return (
-    <View style={styles.container}>
+    <BackgroundView>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* TITOLO DELL'APP */}
         <View style={styles.headerTitles}>
@@ -43,12 +59,18 @@ export default function SetupScreen() {
 
                 {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
                 <View style={styles.centerGroup}>
-                  <Text style={styles.cardTimer}>00:30</Text>
+                  <Text style={styles.cardTimer}>{workTimer.display}</Text>
                   <View style={styles.cardButtons}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      onPressIn={() => workTimer.startAdjusting("sub")}
+                      onPressOut={workTimer.stopAdjusting}
+                    >
                       <Mbutton width={50} height={50} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      onPressIn={() => workTimer.startAdjusting("add")}
+                      onPressOut={workTimer.stopAdjusting}
+                    >
                       <Pbutton width={50} height={50} />
                     </TouchableOpacity>
                   </View>
@@ -57,7 +79,7 @@ export default function SetupScreen() {
 
               <View style={styles.cardImg}>
                 <Image
-                  source={ProvaImg}
+                  source={LavoroImg}
                   style={styles.imageCard}
                   resizeMode="cover"
                 />
@@ -72,12 +94,18 @@ export default function SetupScreen() {
 
                 {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
                 <View style={styles.centerGroup}>
-                  <Text style={styles.cardTimer}>00:30</Text>
+                  <Text style={styles.cardTimer}>{restTimer.display}</Text>
                   <View style={styles.cardButtons}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      onPressIn={() => restTimer.startAdjusting("sub")}
+                      onPressOut={restTimer.stopAdjusting}
+                    >
                       <Mbutton width={50} height={50} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      onPressIn={() => restTimer.startAdjusting("add")}
+                      onPressOut={restTimer.stopAdjusting}
+                    >
                       <Pbutton width={50} height={50} />
                     </TouchableOpacity>
                   </View>
@@ -86,7 +114,7 @@ export default function SetupScreen() {
 
               <View style={styles.cardImg}>
                 <Image
-                  source={ProvaImg}
+                  source={RiposoImg}
                   style={styles.imageCard}
                   resizeMode="cover"
                 />
@@ -101,12 +129,18 @@ export default function SetupScreen() {
 
                 {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
                 <View style={styles.centerGroup}>
-                  <Text style={styles.cardTimer}>00:30</Text>
+                  <Text style={styles.cardTimer}>{roundCounter.display}</Text>
                   <View style={styles.cardButtons}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      onPressIn={() => roundCounter.startAdjusting("sub")}
+                      onPressOut={roundCounter.stopAdjusting}
+                    >
                       <Mbutton width={50} height={50} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      onPressIn={() => roundCounter.startAdjusting("add")}
+                      onPressOut={roundCounter.stopAdjusting}
+                    >
                       <Pbutton width={50} height={50} />
                     </TouchableOpacity>
                   </View>
@@ -115,7 +149,7 @@ export default function SetupScreen() {
 
               <View style={styles.cardImg}>
                 <Image
-                  source={ProvaImg}
+                  source={RoundImg}
                   style={styles.imageCard}
                   resizeMode="cover"
                 />
@@ -128,19 +162,17 @@ export default function SetupScreen() {
 
         {/* BOTTONE DI AVVIO (PLAY/START) */}
         <View style={styles.playButton}>
-          <TouchableOpacity>
-            <Playbutton width={50} height={50} />
+          <TouchableOpacity onPress={handleStart}>
+            <Playbutton width={80} height={80} />
           </TouchableOpacity>
+          <View style={styles.durataTotale}>
+            <Text style={styles.durataText}>DURATA TOTALE</Text>
+            <Text style={styles.durataTime}>
+              {`${totalMins.toString().padStart(2, "0")}:${totalRemainingSecs.toString().padStart(2, "0")}`}
+            </Text>
+          </View>
         </View>
       </ScrollView>
-
-      {/* --- AREA BANNER PUBBLICITARIO --- */}
-      {/* Posizionato fuori dallo ScrollView per restare fisso in fondo */}
-      <View style={styles.adBannerContainer}>
-        {/* Qui andrà il componente AdMob Banner */}
-        <Text style={{ color: "#fff" }}>BANNER ADS QUI</Text>
-      </View>
-      {/* --- FINE AREA BANNER --- */}
-    </View>
+    </BackgroundView>
   );
 }

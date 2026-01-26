@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-
+import { Colors } from "./Colors";
 // 1. Sfondo generale
 // 2. Contenuto scrollabile
 // 3. Titoli e impostazioni
@@ -8,11 +8,17 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     // 1.SFONDO GENERALE
-    paddingHorizontal: 15,
-    paddingVertical: 20,
   },
   scrollContainer: {
     // 2. CONTENUTO SCROLLABILE
+    gap: 25,
+  },
+  BackgroundImg: {
+    width: "100%", // Occupa tutta la larghezza
+    height: "100%", // Occupa tutta l'altezza
+  },
+  gradientOverlay: {
+    ...StyleSheet.absoluteFillObject,
   },
   headerTitles: {
     // 3. TIOLI E IMPOSTAZIONI
@@ -24,7 +30,7 @@ export const styles = StyleSheet.create({
     // Stile per il testo TITOLO
     fontSize: 22,
     fontWeight: "bold",
-    color: "#FF0000",
+    color: Colors.primary,
   }, // 4. CARDS
   cards: {
     flex: 1, // Il contenitore occupa tutto lo spazio centrale
@@ -36,8 +42,9 @@ export const styles = StyleSheet.create({
 
     width: "100%",
     marginVertical: 5,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: Colors.secondary,
     paddingVertical: 5,
+    borderRadius: 15,
   },
   cardImg: {
     flex: 2,
@@ -57,19 +64,21 @@ export const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   cardTitle: {
-    backgroundColor: "#000000",
-    color: "#FFFFFF",
+    backgroundColor: Colors.background,
+    color: Colors.secondary,
     alignSelf: "flex-start",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
-    fontSize: 14,
+    fontSize: 12,
+    fontWeight: "bold",
+    marginLeft: 5,
   },
 
   cardTimer: {
     // area timer
     fontFamily: "monospace",
-    fontSize: 50,
+    fontSize: 45,
     textAlign: "center",
 
     fontVariant: ["tabular-nums"],
@@ -85,8 +94,23 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 20,
   },
-  cardRoundSettings: {
-    display: "flex",
+  durataTotale: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 10,
+  },
+  durataText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: Colors.secondary,
+  },
+  durataTime: {
+    fontSize: 16,
+    fontWeight: "bold",
+    backgroundColor: Colors.secondary,
+    color: "#000000",
+    paddingHorizontal: 10,
+    borderRadius: 5,
   },
   adBannerContainer: {
     // Lo spazio fisso in fondo per la pubblicità
