@@ -30,7 +30,7 @@ export default function SetupScreen() {
   const handleStart = () => {
     // Logica per navigare al timer passando i dati
     router.push({
-      pathname: "/pretimer",
+      pathname: "/timer",
       params: {
         rounds: roundCounter.value,
         workTime: workTimer.value,
