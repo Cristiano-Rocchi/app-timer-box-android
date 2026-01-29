@@ -8,8 +8,6 @@ export const styles = StyleSheet.create({
   headerTitles: {
     flexDirection: "row",
     justifyContent: "space-between",
-
-    paddingTop: 50,
     paddingHorizontal: 20,
   },
   title: {

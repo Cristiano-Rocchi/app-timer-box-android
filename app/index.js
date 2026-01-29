@@ -1,6 +1,9 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { useEffect } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BackgroundView from "../components/BackgroundView";
 
 import Mbutton from "../assets/icons/Mbutton.svg";
@@ -13,10 +16,49 @@ import { styles } from "../constants/style";
 import { useTimerSetup } from "../hooks/TimerSetup";
 export default function SetupScreen() {
   const router = useRouter();
-
+  const insets = useSafeAreaInsets();
   const workTimer = useTimerSetup(30, true, 5, 3599); // MM:SS, min 5s, max 59:59
   const restTimer = useTimerSetup(30, true, 5, 3599); // MM:SS, min 5s, max 59:59
   const roundCounter = useTimerSetup(5, false, 1, 99); // Numero, min 1, max 99
+
+  // --- 1. CARICAMENTO DATI ALL'AVVIO ---
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const savedData = await AsyncStorage.getItem("@timer_settings");
+        if (savedData !== null) {
+          const parsed = JSON.parse(savedData);
+          // Usiamo setValue che abbiamo appena aggiunto all'hook
+          workTimer.setValue(parsed.workTime);
+          restTimer.setValue(parsed.restTime);
+          roundCounter.setValue(parsed.rounds);
+        }
+      } catch (e) {
+        console.log("Errore caricamento:", e);
+      }
+    };
+    loadSettings();
+  }, []); // Eseguito solo una volta all'apertura
+
+  // --- 2. SALVATAGGIO AUTOMATICO ---
+  useEffect(() => {
+    const saveSettings = async () => {
+      try {
+        const dataToSave = {
+          workTime: workTimer.value,
+          restTime: restTimer.value,
+          rounds: roundCounter.value,
+        };
+        await AsyncStorage.setItem(
+          "@timer_settings",
+          JSON.stringify(dataToSave),
+        );
+      } catch (e) {
+        console.log("Errore salvataggio:", e);
+      }
+    };
+    saveSettings();
+  }, [workTimer.value, restTimer.value, roundCounter.value]); // Salva ogni volta che un valore cambia
 
   // Calcolo dinamico durata totale
   const totalSecs = Math.max(
@@ -41,138 +83,140 @@ export default function SetupScreen() {
 
   return (
     <BackgroundView>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* TITOLO DELL'APP */}
-        <View style={styles.headerTitles}>
-          <Text style={styles.title}>BOXING TIMER</Text>
-          <Text>info</Text>
-        </View>
+      <View style={{ paddingTop: insets.top }}>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          {/* TITOLO DELL'APP */}
+          <View style={styles.headerTitles}>
+            <Text style={styles.title}>BOXING TIMER</Text>
+            <Text>info</Text>
+          </View>
 
-        {/* --- INIZIO AREA CARD SETUP --- */}
-        {/* Qui inserirai le tue Card personalizzate (es. Round, Work, Rest) */}
-        <View style={styles.cards}>
-          <View style={styles.card}>
-            <View style={styles.cardContent}>
-              {/* CAMBIO DA cardInfo A cardSettings */}
-              <View style={styles.cardSettings}>
-                <Text style={styles.cardTitle}>DURATA DEL ROUND</Text>
+          {/* --- INIZIO AREA CARD SETUP --- */}
+          {/* Qui inserirai le tue Card personalizzate (es. Round, Work, Rest) */}
+          <View style={styles.cards}>
+            <View style={styles.card}>
+              <View style={styles.cardContent}>
+                {/* CAMBIO DA cardInfo A cardSettings */}
+                <View style={styles.cardSettings}>
+                  <Text style={styles.cardTitle}>DURATA DEL ROUND</Text>
 
-                {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
-                <View style={styles.centerGroup}>
-                  <Text style={styles.cardTimer}>{workTimer.display}</Text>
-                  <View style={styles.cardButtons}>
-                    <TouchableOpacity
-                      onPressIn={() => workTimer.startAdjusting("sub")}
-                      onPressOut={workTimer.stopAdjusting}
-                    >
-                      <Mbutton width={50} height={50} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPressIn={() => workTimer.startAdjusting("add")}
-                      onPressOut={workTimer.stopAdjusting}
-                    >
-                      <Pbutton width={50} height={50} />
-                    </TouchableOpacity>
+                  {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
+                  <View style={styles.centerGroup}>
+                    <Text style={styles.cardTimer}>{workTimer.display}</Text>
+                    <View style={styles.cardButtons}>
+                      <TouchableOpacity
+                        onPressIn={() => workTimer.startAdjusting("sub")}
+                        onPressOut={workTimer.stopAdjusting}
+                      >
+                        <Mbutton width={50} height={50} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPressIn={() => workTimer.startAdjusting("add")}
+                        onPressOut={workTimer.stopAdjusting}
+                      >
+                        <Pbutton width={50} height={50} />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
-              </View>
 
-              <View style={styles.cardImg}>
-                <Image
-                  source={LavoroImg}
-                  style={styles.imageCard}
-                  resizeMode="cover"
-                />
+                <View style={styles.cardImg}>
+                  <Image
+                    source={LavoroImg}
+                    style={styles.imageCard}
+                    resizeMode="cover"
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={styles.card}>
+              <View style={styles.cardContent}>
+                {/* CAMBIO DA cardInfo A cardSettings */}
+                <View style={styles.cardSettings}>
+                  <Text style={styles.cardTitle}>DURATA DEL ROUND</Text>
+
+                  {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
+                  <View style={styles.centerGroup}>
+                    <Text style={styles.cardTimer}>{restTimer.display}</Text>
+                    <View style={styles.cardButtons}>
+                      <TouchableOpacity
+                        onPressIn={() => restTimer.startAdjusting("sub")}
+                        onPressOut={restTimer.stopAdjusting}
+                      >
+                        <Mbutton width={50} height={50} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPressIn={() => restTimer.startAdjusting("add")}
+                        onPressOut={restTimer.stopAdjusting}
+                      >
+                        <Pbutton width={50} height={50} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={styles.cardImg}>
+                  <Image
+                    source={RiposoImg}
+                    style={styles.imageCard}
+                    resizeMode="cover"
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={styles.card}>
+              <View style={styles.cardContent}>
+                {/* CAMBIO DA cardInfo A cardSettings */}
+                <View style={styles.cardSettings}>
+                  <Text style={styles.cardTitle}>NUMERO DI ROUND</Text>
+
+                  {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
+                  <View style={styles.centerGroup}>
+                    <Text style={styles.cardTimer}>{roundCounter.display}</Text>
+                    <View style={styles.cardButtons}>
+                      <TouchableOpacity
+                        onPressIn={() => roundCounter.startAdjusting("sub")}
+                        onPressOut={roundCounter.stopAdjusting}
+                      >
+                        <Mbutton width={50} height={50} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPressIn={() => roundCounter.startAdjusting("add")}
+                        onPressOut={roundCounter.stopAdjusting}
+                      >
+                        <Pbutton width={50} height={50} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={styles.cardImg}>
+                  <Image
+                    source={RoundImg}
+                    style={styles.imageCard}
+                    resizeMode="cover"
+                  />
+                </View>
               </View>
             </View>
           </View>
-          <View style={styles.card}>
-            <View style={styles.cardContent}>
-              {/* CAMBIO DA cardInfo A cardSettings */}
-              <View style={styles.cardSettings}>
-                <Text style={styles.cardTitle}>DURATA DEL ROUND</Text>
 
-                {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
-                <View style={styles.centerGroup}>
-                  <Text style={styles.cardTimer}>{restTimer.display}</Text>
-                  <View style={styles.cardButtons}>
-                    <TouchableOpacity
-                      onPressIn={() => restTimer.startAdjusting("sub")}
-                      onPressOut={restTimer.stopAdjusting}
-                    >
-                      <Mbutton width={50} height={50} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPressIn={() => restTimer.startAdjusting("add")}
-                      onPressOut={restTimer.stopAdjusting}
-                    >
-                      <Pbutton width={50} height={50} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
+          {/* --- FINE AREA CARD SETUP --- */}
 
-              <View style={styles.cardImg}>
-                <Image
-                  source={RiposoImg}
-                  style={styles.imageCard}
-                  resizeMode="cover"
-                />
-              </View>
+          {/* BOTTONE DI AVVIO (PLAY/START) */}
+          <View style={styles.playButton}>
+            <TouchableOpacity onPress={handleStart}>
+              <Playbutton width={80} height={80} />
+            </TouchableOpacity>
+            <View style={styles.durataTotale}>
+              <Text style={styles.durataText}>DURATA TOTALE</Text>
+              <Text style={styles.durataTime}>
+                {`${totalMins.toString().padStart(2, "0")}:${totalRemainingSecs.toString().padStart(2, "0")}`}
+              </Text>
             </View>
           </View>
-          <View style={styles.card}>
-            <View style={styles.cardContent}>
-              {/* CAMBIO DA cardInfo A cardSettings */}
-              <View style={styles.cardSettings}>
-                <Text style={styles.cardTitle}>NUMERO DI ROUND</Text>
-
-                {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
-                <View style={styles.centerGroup}>
-                  <Text style={styles.cardTimer}>{roundCounter.display}</Text>
-                  <View style={styles.cardButtons}>
-                    <TouchableOpacity
-                      onPressIn={() => roundCounter.startAdjusting("sub")}
-                      onPressOut={roundCounter.stopAdjusting}
-                    >
-                      <Mbutton width={50} height={50} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPressIn={() => roundCounter.startAdjusting("add")}
-                      onPressOut={roundCounter.stopAdjusting}
-                    >
-                      <Pbutton width={50} height={50} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-
-              <View style={styles.cardImg}>
-                <Image
-                  source={RoundImg}
-                  style={styles.imageCard}
-                  resizeMode="cover"
-                />
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* --- FINE AREA CARD SETUP --- */}
-
-        {/* BOTTONE DI AVVIO (PLAY/START) */}
-        <View style={styles.playButton}>
-          <TouchableOpacity onPress={handleStart}>
-            <Playbutton width={80} height={80} />
-          </TouchableOpacity>
-          <View style={styles.durataTotale}>
-            <Text style={styles.durataText}>DURATA TOTALE</Text>
-            <Text style={styles.durataTime}>
-              {`${totalMins.toString().padStart(2, "0")}:${totalRemainingSecs.toString().padStart(2, "0")}`}
-            </Text>
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </BackgroundView>
   );
 }

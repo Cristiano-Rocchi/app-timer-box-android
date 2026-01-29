@@ -23,25 +23,20 @@ export const useTimerSetup = (
   const startAdjusting = (type) => {
     const isAdd = type === "add";
 
-    // DEFINIZIONE DEGLI STEP
-    // Se isSeconds: step 5s, dopo 6s diventa 60s
-    // Se NON isSeconds (Round): step 1, dopo 6s diventa 5
     const step = isSeconds ? (isAdd ? 5 : -5) : isAdd ? 1 : -1;
     const fastStep = isSeconds ? (isAdd ? 60 : -60) : isAdd ? 5 : -5;
 
-    // 1. Scatto immediato
     updateValue(step);
 
     startTimeRef.current = Date.now();
 
-    // 2. Avviamo il ciclo di ripetizione
     intervalRef.current = setInterval(() => {
       const durationPressed = (Date.now() - startTimeRef.current) / 1000;
 
       if (durationPressed >= 6) {
-        updateValue(fastStep); // Accelerazione dopo 6 secondi
+        updateValue(fastStep);
       } else {
-        updateValue(step); // Passo normale
+        updateValue(step);
       }
     }, 150);
   };
@@ -54,18 +49,18 @@ export const useTimerSetup = (
     startTimeRef.current = null;
   };
 
-  // FORMATTAZIONE DEL TESTO
   const formatDisplay = () => {
-    if (!isSeconds) return value.toString(); // Ritorna "12"
+    if (!isSeconds) return value.toString();
 
     const mins = Math.floor(value / 60);
     const secs = value % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`; // Ritorna "03:00"
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   return {
-    value, // Il numero puro (utile per i calcoli della durata totale)
-    display: formatDisplay(), // Il testo da mostrare nella card
+    value,
+    setValue,
+    display: formatDisplay(),
     startAdjusting,
     stopAdjusting,
   };

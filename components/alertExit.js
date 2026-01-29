@@ -1,4 +1,5 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Colors } from "../constants/Colors";
 
 export default function AlertExit({ visible, onConfirm, onCancel }) {
   return (
@@ -12,11 +13,15 @@ export default function AlertExit({ visible, onConfirm, onCancel }) {
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={onConfirm}>
-              <Text style={[styles.buttonText, { color: "#E2F163" }]}>SI</Text>
+              <Text style={[styles.buttonText, { color: Colors.primary }]}>
+                SI
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={onCancel}>
-              <Text style={[styles.buttonText, { color: "#E2F163" }]}>NO</Text>
+              <Text style={[styles.buttonText, { color: Colors.primary }]}>
+                NO
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -28,21 +33,21 @@ export default function AlertExit({ visible, onConfirm, onCancel }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.8)", // Sfondo semitrasparente scuro
+    backgroundColor: "rgba(0, 0, 0, 0.48)",
     justifyContent: "center",
     alignItems: "center",
   },
   alertContainer: {
     width: "80%",
-    backgroundColor: "#1A1A1A", // Grigio molto scuro
+    backgroundColor: "#1A1A1A",
     padding: 25,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#E2F163",
+    borderColor: Colors.primary,
     alignItems: "center",
   },
   title: {
-    color: "#E2F163",
+    color: Colors.primary,
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
