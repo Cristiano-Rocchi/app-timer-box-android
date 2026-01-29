@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { styles } from "../constants/styleTimer";
 
-export default function LogicPreTimer({ onFinish }) {
+export default function LogicPreTimer({ onFinish, isPaused }) {
+  // Aggiunta prop isPaused
   const [timeLeft, setTimeLeft] = useState(5);
 
   async function playSound(type) {
@@ -24,22 +25,30 @@ export default function LogicPreTimer({ onFinish }) {
   }
 
   useEffect(() => {
-    if (timeLeft > 0) {
+    let timer = null;
+    let timeout = null;
+
+    // Il countdown procede solo se NON è in pausa e c'è tempo rimasto
+    if (timeLeft > 0 && !isPaused) {
       playSound("beep");
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-      return () => clearInterval(timer);
-    } else {
-      playSound("bell"); // Facciamo partire la campana da 2 secondi subito
-
-      const timeout = setTimeout(() => {
+    }
+    // Quando arriva a zero (e non è in pausa)
+    else if (timeLeft === 0 && !isPaused) {
+      playSound("bell");
+      timeout = setTimeout(() => {
         onFinish();
       }, 1000);
-
-      return () => clearTimeout(timeout);
     }
-  }, [timeLeft]);
+
+    // Pulizia degli intervalli e timeout
+    return () => {
+      if (timer) clearInterval(timer);
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [timeLeft, isPaused, onFinish]); // Aggiunta dipendenza isPaused
 
   return (
     <View style={styles.preTimerContent}>

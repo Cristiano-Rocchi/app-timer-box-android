@@ -8,11 +8,12 @@ export default function LogicTimer({
   restTime,
   isPaused,
   onRoundComplete,
+  currentRound, // AGGIUNTO
+  totalRounds, // AGGIUNTO
 }) {
-  const [phase, setPhase] = useState("WORK"); // "WORK" o "REST"
+  const [phase, setPhase] = useState("WORK");
   const [timeLeft, setTimeLeft] = useState(workTime);
 
-  // Funzione universale per i suoni
   async function playSound(type) {
     try {
       const file =
@@ -30,7 +31,6 @@ export default function LogicTimer({
     }
   }
 
-  // Formattatore del tempo (es: 90 -> 01:30)
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -41,8 +41,6 @@ export default function LogicTimer({
     let interval = null;
 
     if (!isPaused && timeLeft > 0) {
-      // CONTROLLO PER I BEEP DEGLI ULTIMI 3 SECONDI
-      // Suona il beep quando mancano 3, 2, 1 secondi
       if (timeLeft <= 3) {
         playSound("beep");
       }
@@ -51,7 +49,6 @@ export default function LogicTimer({
         setTimeLeft((prev) => prev - 1);
       }, 1000);
     } else if (timeLeft === 0) {
-      // FINE FASE: Suona la campana
       playSound("bell");
 
       if (phase === "WORK") {
@@ -78,8 +75,11 @@ export default function LogicTimer({
       ]}
     >
       <Text style={styles.countdownNumber}>{formatTime(timeLeft)}</Text>
+
+      {/* MODIFICATO: Ora mostra la fase e il numero del round */}
       <Text style={styles.prepareText}>
-        {phase === "WORK" ? "LAVORO" : "RIPOSO"}
+        {phase === "WORK" ? "ROUND" : "RIPOSO"}{" "}
+        <Text style={{ fontWeight: "bold" }}>{currentRound}</Text>/{totalRounds}
       </Text>
     </View>
   );

@@ -1,6 +1,9 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { BackHandler, Text, TouchableOpacity, View } from "react-native"; // Aggiungi BackHandler
+import Pausebutton from "../assets/icons/Pause.svg";
+import Playbutton from "../assets/icons/Play.svg";
+import AlertExit from "../components/alertExit";
 import BackgroundView from "../components/BackgroundView";
 import LogicPretimer from "../components/LogicPretimer";
 import LogicTimer from "../components/LogicTimer";
@@ -14,10 +17,43 @@ export default function TimerScreen() {
   const [phase, setPhase] = useState("PREPARING");
   const [currentRound, setCurrentRound] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [wasPausedBeforeAlert, setWasPausedBeforeAlert] = useState(false);
 
   const totalRounds = parseInt(params.rounds);
   const workTime = parseInt(params.workTime);
   const restTime = parseInt(params.restTime);
+
+  // Funzione per gestire il tentativo di uscita
+  // Funzione per gestire il tentativo di uscita
+  const handleBackAttempt = () => {
+    // Se l'allenamento è FINITO o se siamo ancora nel PRETIMER
+    if (phase === "FINISHED" || phase === "PREPARING") {
+      router.replace("/"); // Torna indietro direttamente
+    } else {
+      // Se l'allenamento (WORKOUT) è in corso, chiedi conferma
+      setWasPausedBeforeAlert(isPaused);
+      setIsPaused(true);
+      setShowAlert(true);
+    }
+    return true;
+  };
+
+  // Intercetta tasto indietro fisico (Android/Gesture)
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => handleBackAttempt();
+
+      // Creiamo l'abbonamento
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      // Restituiamo la funzione di rimozione corretta
+      return () => backHandler.remove();
+    }, [phase, isPaused]),
+  );
 
   // Funzione chiamata quando finisce il countdown "Preparati"
   const handlePreTimerFinish = () => {
@@ -36,19 +72,26 @@ export default function TimerScreen() {
 
   return (
     <BackgroundView>
+      {/* Il tuo Alert personalizzato */}
+      <AlertExit
+        visible={showAlert}
+        onConfirm={() => router.replace("/")}
+        onCancel={() => {
+          setShowAlert(false);
+          if (!wasPausedBeforeAlert) setIsPaused(false); // Riprende solo se non era già in pausa
+        }}
+      />
+
       <View style={styles.headerTitles}>
-        <TouchableOpacity onPress={() => router.back()}>
+        {/* Cambiato da router.back() alla nostra funzione */}
+        <TouchableOpacity onPress={handleBackAttempt}>
           <Text style={styles.title}>&lt;</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>
-          {phase === "PREPARING"
-            ? "PREPARATI"
-            : `ROUND ${currentRound}/${totalRounds}`}
-        </Text>
+        <Text style={styles.title}>ALLENAMENTO</Text>
+        <View style={{ width: 22 }} />
       </View>
 
       <View style={styles.Content}>
-        {/* Switch tra le fasi dell'allenamento */}
         {phase === "PREPARING" && (
           <LogicPretimer onFinish={handlePreTimerFinish} />
         )}
@@ -59,6 +102,8 @@ export default function TimerScreen() {
             restTime={restTime}
             isPaused={isPaused}
             onRoundComplete={handleRoundComplete}
+            currentRound={currentRound}
+            totalRounds={totalRounds}
           />
         )}
 
@@ -73,15 +118,27 @@ export default function TimerScreen() {
         <View style={styles.ButtonsContainer}>
           {phase === "WORKOUT" && (
             <TouchableOpacity onPress={() => setIsPaused(!isPaused)}>
-              <Text style={styles.playPauseButton}>
-                {isPaused ? "RIPRENDI" : "PAUSA"}
-              </Text>
+              {isPaused ? (
+                <Playbutton width={100} height={100} />
+              ) : (
+                <Pausebutton width={100} height={100} />
+              )}
             </TouchableOpacity>
           )}
 
           {phase === "FINISHED" && (
-            <TouchableOpacity onPress={() => router.replace("/")}>
-              <Text style={styles.playPauseButton}>TORNA ALLA HOME</Text>
+            <TouchableOpacity
+              style={[styles.buttonPrimary, { marginTop: 20 }]}
+              onPress={() => router.replace("/")}
+            >
+              <Text
+                style={[
+                  styles.playPauseButton,
+                  { color: "#E2F163", fontSize: 20 },
+                ]}
+              >
+                TORNA ALLA HOME
+              </Text>
             </TouchableOpacity>
           )}
         </View>

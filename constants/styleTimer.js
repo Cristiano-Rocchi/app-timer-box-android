@@ -7,6 +7,7 @@ export const styles = StyleSheet.create({
   },
   headerTitles: {
     flexDirection: "row",
+    justifyContent: "space-between",
 
     paddingTop: 50,
     paddingHorizontal: 20,
@@ -39,7 +40,5 @@ export const styles = StyleSheet.create({
     borderTopColor: Colors.background,
     borderTopWidth: 3,
   },
-  ButtonsContainer: {
-    backgroundColor: Colors.primary,
-  },
+  ButtonsContainer: {},
 });
