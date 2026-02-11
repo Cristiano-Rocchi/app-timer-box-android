@@ -1,11 +1,15 @@
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, Vibration, View } from "react-native";
 import { styles } from "../constants/styleTimer";
+import { translations } from "../constants/translations";
 
-export default function LogicPreTimer({ onFinish, isPaused }) {
-  // Aggiunta prop isPaused
+export default function LogicPreTimer({ onFinish, isPaused, lang }) {
+  // RICEVE LANG
   const [timeLeft, setTimeLeft] = useState(5);
+
+  // Recuperiamo le traduzioni
+  const t = translations[lang] || translations["eng"];
 
   async function playSound(type) {
     try {
@@ -28,34 +32,33 @@ export default function LogicPreTimer({ onFinish, isPaused }) {
     let timer = null;
     let timeout = null;
 
-    // Il countdown procede solo se NON è in pausa e c'è tempo rimasto
     if (timeLeft > 0 && !isPaused) {
       playSound("beep");
       timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-    }
-    // Quando arriva a zero (e non è in pausa)
-    else if (timeLeft === 0 && !isPaused) {
+    } else if (timeLeft === 0 && !isPaused) {
       playSound("bell");
+      Vibration.vibrate(600);
       timeout = setTimeout(() => {
         onFinish();
       }, 1000);
     }
 
-    // Pulizia degli intervalli e timeout
     return () => {
       if (timer) clearInterval(timer);
       if (timeout) clearTimeout(timeout);
     };
-  }, [timeLeft, isPaused, onFinish]); // Aggiunta dipendenza isPaused
+  }, [timeLeft, isPaused, onFinish]);
 
   return (
     <View style={styles.preTimerContent}>
       <Text style={styles.countdownNumber}>
-        {timeLeft === 0 ? "VAI!" : timeLeft}
+        {/* TRADOTTO: VAI! */}
+        {timeLeft === 0 ? t.go : timeLeft}
       </Text>
-      <Text style={styles.prepareText}>PREPARATI</Text>
+      {/* TRADOTTO: PREPARATI */}
+      <Text style={styles.prepareText}>{t.prepare}</Text>
     </View>
   );
 }

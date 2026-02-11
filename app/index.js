@@ -13,10 +13,17 @@ import RoundImg from "../assets/images/round.webp";
 import LavoroImg from "../assets/images/tempolavoro.webp";
 import RiposoImg from "../assets/images/temporiposo.webp";
 import { styles } from "../constants/style";
+import { translations } from "../constants/translations";
 import { useTimerSetup } from "../hooks/TimerSetup";
+
 export default function SetupScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
+  // Per ora impostiamo la lingua fissa su "it". In futuro la leggeremo dalle impostazioni.
+  const lang = "eng";
+  const t = translations[lang];
+
   const workTimer = useTimerSetup(30, true, 5, 3599); // MM:SS, min 5s, max 59:59
   const restTimer = useTimerSetup(30, true, 5, 3599); // MM:SS, min 5s, max 59:59
   const roundCounter = useTimerSetup(5, false, 1, 99); // Numero, min 1, max 99
@@ -28,7 +35,6 @@ export default function SetupScreen() {
         const savedData = await AsyncStorage.getItem("@timer_settings");
         if (savedData !== null) {
           const parsed = JSON.parse(savedData);
-          // Usiamo setValue che abbiamo appena aggiunto all'hook
           workTimer.setValue(parsed.workTime);
           restTimer.setValue(parsed.restTime);
           roundCounter.setValue(parsed.rounds);
@@ -38,7 +44,7 @@ export default function SetupScreen() {
       }
     };
     loadSettings();
-  }, []); // Eseguito solo una volta all'apertura
+  }, []);
 
   // --- 2. SALVATAGGIO AUTOMATICO ---
   useEffect(() => {
@@ -58,7 +64,7 @@ export default function SetupScreen() {
       }
     };
     saveSettings();
-  }, [workTimer.value, restTimer.value, roundCounter.value]); // Salva ogni volta che un valore cambia
+  }, [workTimer.value, restTimer.value, roundCounter.value]);
 
   // Calcolo dinamico durata totale
   const totalSecs = Math.max(
@@ -70,7 +76,6 @@ export default function SetupScreen() {
   const totalRemainingSecs = totalSecs % 60;
 
   const handleStart = () => {
-    // Logica per navigare al timer passando i dati
     router.push({
       pathname: "/timer",
       params: {
@@ -87,20 +92,17 @@ export default function SetupScreen() {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {/* TITOLO DELL'APP */}
           <View style={styles.headerTitles}>
-            <Text style={styles.title}>BOXING TIMER</Text>
-            <Text>info</Text>
+            <Text style={styles.title}>{t.app_title}</Text>
+            <Text>{t.info_btn}</Text>
           </View>
 
           {/* --- INIZIO AREA CARD SETUP --- */}
-          {/* Qui inserirai le tue Card personalizzate (es. Round, Work, Rest) */}
           <View style={styles.cards}>
+            {/* CARD LAVORO */}
             <View style={styles.card}>
               <View style={styles.cardContent}>
-                {/* CAMBIO DA cardInfo A cardSettings */}
                 <View style={styles.cardSettings}>
-                  <Text style={styles.cardTitle}>DURATA DEL ROUND</Text>
-
-                  {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
+                  <Text style={styles.cardTitle}>{t.work_duration}</Text>
                   <View style={styles.centerGroup}>
                     <Text style={styles.cardTimer}>{workTimer.display}</Text>
                     <View style={styles.cardButtons}>
@@ -119,7 +121,6 @@ export default function SetupScreen() {
                     </View>
                   </View>
                 </View>
-
                 <View style={styles.cardImg}>
                   <Image
                     source={LavoroImg}
@@ -129,13 +130,12 @@ export default function SetupScreen() {
                 </View>
               </View>
             </View>
+
+            {/* CARD RIPOSO */}
             <View style={styles.card}>
               <View style={styles.cardContent}>
-                {/* CAMBIO DA cardInfo A cardSettings */}
                 <View style={styles.cardSettings}>
-                  <Text style={styles.cardTitle}>DURATA DEL ROUND</Text>
-
-                  {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
+                  <Text style={styles.cardTitle}>{t.rest_duration}</Text>
                   <View style={styles.centerGroup}>
                     <Text style={styles.cardTimer}>{restTimer.display}</Text>
                     <View style={styles.cardButtons}>
@@ -154,7 +154,6 @@ export default function SetupScreen() {
                     </View>
                   </View>
                 </View>
-
                 <View style={styles.cardImg}>
                   <Image
                     source={RiposoImg}
@@ -164,13 +163,12 @@ export default function SetupScreen() {
                 </View>
               </View>
             </View>
+
+            {/* CARD ROUNDS */}
             <View style={styles.card}>
               <View style={styles.cardContent}>
-                {/* CAMBIO DA cardInfo A cardSettings */}
                 <View style={styles.cardSettings}>
-                  <Text style={styles.cardTitle}>NUMERO DI ROUND</Text>
-
-                  {/* AGGIUNTA centerGroup PER IL BLOCCO CENTRALE */}
+                  <Text style={styles.cardTitle}>{t.rounds_count}</Text>
                   <View style={styles.centerGroup}>
                     <Text style={styles.cardTimer}>{roundCounter.display}</Text>
                     <View style={styles.cardButtons}>
@@ -189,7 +187,6 @@ export default function SetupScreen() {
                     </View>
                   </View>
                 </View>
-
                 <View style={styles.cardImg}>
                   <Image
                     source={RoundImg}
@@ -201,15 +198,13 @@ export default function SetupScreen() {
             </View>
           </View>
 
-          {/* --- FINE AREA CARD SETUP --- */}
-
-          {/* BOTTONE DI AVVIO (PLAY/START) */}
+          {/* BOTTONE DI AVVIO E DURATA TOTALE */}
           <View style={styles.playButton}>
             <TouchableOpacity onPress={handleStart}>
               <Playbutton width={80} height={80} />
             </TouchableOpacity>
             <View style={styles.durataTotale}>
-              <Text style={styles.durataText}>DURATA TOTALE</Text>
+              <Text style={styles.durataText}>{t.total_duration}</Text>
               <Text style={styles.durataTime}>
                 {`${totalMins.toString().padStart(2, "0")}:${totalRemainingSecs.toString().padStart(2, "0")}`}
               </Text>

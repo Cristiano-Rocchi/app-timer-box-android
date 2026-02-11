@@ -1,18 +1,23 @@
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, Vibration, View } from "react-native";
 import { styles } from "../constants/styleTimer";
+import { translations } from "../constants/translations"; // t minuscola come hai detto
 
 export default function LogicTimer({
   workTime,
   restTime,
   isPaused,
   onRoundComplete,
-  currentRound, // AGGIUNTO
-  totalRounds, // AGGIUNTO
+  currentRound,
+  totalRounds,
+  lang,
 }) {
   const [phase, setPhase] = useState("WORK");
   const [timeLeft, setTimeLeft] = useState(workTime);
+
+  // Fallback su jp visto che ti piace testare quello!
+  const t = translations[lang] || translations["eng"];
 
   async function playSound(type) {
     try {
@@ -50,6 +55,7 @@ export default function LogicTimer({
       }, 1000);
     } else if (timeLeft === 0) {
       playSound("bell");
+      Vibration.vibrate(600);
 
       if (phase === "WORK") {
         setPhase("REST");
@@ -76,9 +82,9 @@ export default function LogicTimer({
     >
       <Text style={styles.countdownNumber}>{formatTime(timeLeft)}</Text>
 
-      {/* MODIFICATO: Ora mostra la fase e il numero del round */}
+      {/* QUI USA LE CHIAVI round E rest */}
       <Text style={styles.prepareText}>
-        {phase === "WORK" ? "ROUND" : "RIPOSO"}{" "}
+        {phase === "WORK" ? t.round : t.rest}{" "}
         <Text style={{ fontWeight: "bold" }}>{currentRound}</Text>/{totalRounds}
       </Text>
     </View>

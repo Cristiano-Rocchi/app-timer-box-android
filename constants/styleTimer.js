@@ -29,6 +29,7 @@ export const styles = StyleSheet.create({
   },
   countdownNumber: {
     fontSize: 92,
+    color: Colors.primary,
   },
   prepareText: {
     fontSize: 24,
@@ -38,5 +39,5 @@ export const styles = StyleSheet.create({
     borderTopColor: Colors.background,
     borderTopWidth: 3,
   },
-  ButtonsContainer: {},
+  ButtonPrimary: {},
 });

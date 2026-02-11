@@ -1,26 +1,33 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
+import { translations } from "../constants/translations"; // IMPORTA TRADUZIONI
 
-export default function AlertExit({ visible, onConfirm, onCancel }) {
+export default function AlertExit({ visible, onConfirm, onCancel, lang }) {
+  // Recuperiamo le traduzioni (con fallback su italiano)
+  const t = translations[lang] || translations["ita"];
+
   return (
     <Modal visible={visible} transparent={true} animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.alertContainer}>
-          <Text style={styles.title}>ATTENZIONE</Text>
-          <Text style={styles.message}>
-            Vuoi davvero lasciare l'allenamento?
-          </Text>
+          {/* TRADOTTO: ATTENZIONE */}
+          <Text style={styles.title}>{t.exit_title}</Text>
+
+          {/* TRADOTTO: Vuoi davvero lasciare l'allenamento? */}
+          <Text style={styles.message}>{t.exit_message}</Text>
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={onConfirm}>
+              {/* TRADOTTO: SI */}
               <Text style={[styles.buttonText, { color: Colors.primary }]}>
-                SI
+                {t.yes}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={onCancel}>
+              {/* TRADOTTO: NO */}
               <Text style={[styles.buttonText, { color: Colors.primary }]}>
-                NO
+                {t.no}
               </Text>
             </TouchableOpacity>
           </View>
