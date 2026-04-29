@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native"; // Importante per aggiornare al ritorno
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react"; // Aggiunto useState e useCallback
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,6 +10,7 @@ import BackgroundView from "../components/BackgroundView";
 import Mbutton from "../assets/icons/Mbutton.svg";
 import Pbutton from "../assets/icons/Pbutton.svg";
 import Playbutton from "../assets/icons/Play.svg";
+import Settingsbutton from "../assets/icons/Settings.svg";
 import RoundImg from "../assets/images/round.webp";
 import LavoroImg from "../assets/images/tempolavoro.webp";
 import RiposoImg from "../assets/images/temporiposo.webp";
@@ -20,33 +22,52 @@ export default function SetupScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  // Per ora impostiamo la lingua fissa su "it". In futuro la leggeremo dalle impostazioni.
-  const lang = "eng";
-  const t = translations[lang];
+  // --- STATO PER LA LINGUA ---
+  const [lang, setLang] = useState("eng");
+  const t = translations[lang] || translations["eng"];
 
-  const workTimer = useTimerSetup(30, true, 5, 3599); // MM:SS, min 5s, max 59:59
-  const restTimer = useTimerSetup(30, true, 5, 3599); // MM:SS, min 5s, max 59:59
-  const roundCounter = useTimerSetup(5, false, 1, 99); // Numero, min 1, max 99
+  const workTimer = useTimerSetup(180, true, 5, 3599);
+  const restTimer = useTimerSetup(60, true, 5, 3599);
+  const roundCounter = useTimerSetup(12, false, 1, 99);
 
-  // --- 1. CARICAMENTO DATI ALL'AVVIO ---
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const savedData = await AsyncStorage.getItem("@timer_settings");
-        if (savedData !== null) {
-          const parsed = JSON.parse(savedData);
-          workTimer.setValue(parsed.workTime);
-          restTimer.setValue(parsed.restTime);
-          roundCounter.setValue(parsed.rounds);
-        }
-      } catch (e) {
-        console.log("Errore caricamento:", e);
+  // --- CARICAMENTO IMPOSTAZIONI (Lingua, Suoni, Vibrazione) ---
+  const loadAppSettings = async () => {
+    try {
+      const savedSettings = await AsyncStorage.getItem("@app_settings");
+      if (savedSettings !== null) {
+        const parsed = JSON.parse(savedSettings);
+        if (parsed.lang) setLang(parsed.lang);
       }
-    };
-    loadSettings();
-  }, []);
+    } catch (e) {
+      console.log("Errore caricamento app settings:", e);
+    }
+  };
 
-  // --- 2. SALVATAGGIO AUTOMATICO ---
+  // --- CARICAMENTO VALORI TIMER ---
+  const loadTimerValues = async () => {
+    try {
+      const savedData = await AsyncStorage.getItem("@timer_settings");
+      if (savedData !== null) {
+        const parsed = JSON.parse(savedData);
+        workTimer.setValue(parsed.workTime);
+        restTimer.setValue(parsed.restTime);
+        roundCounter.setValue(parsed.rounds);
+      }
+    } catch (e) {
+      console.log("Errore caricamento timer:", e);
+    }
+  };
+
+  // Questo hook si attiva ogni volta che la schermata torna in primo piano
+  // Utile se cambi lingua nelle impostazioni e poi torni indietro
+  useFocusEffect(
+    useCallback(() => {
+      loadAppSettings();
+      loadTimerValues();
+    }, []),
+  );
+
+  // --- SALVATAGGIO AUTOMATICO VALORI TIMER ---
   useEffect(() => {
     const saveSettings = async () => {
       try {
@@ -66,12 +87,10 @@ export default function SetupScreen() {
     saveSettings();
   }, [workTimer.value, restTimer.value, roundCounter.value]);
 
-  // Calcolo dinamico durata totale
   const totalSecs = Math.max(
     0,
     (workTimer.value + restTimer.value) * roundCounter.value - restTimer.value,
   );
-
   const totalMins = Math.floor(totalSecs / 60);
   const totalRemainingSecs = totalSecs % 60;
 
@@ -82,21 +101,22 @@ export default function SetupScreen() {
         rounds: roundCounter.value,
         workTime: workTimer.value,
         restTime: restTimer.value,
+        lang: lang, // Passiamo la lingua al timer
       },
     });
   };
 
   return (
     <BackgroundView>
-      <View style={{ paddingTop: insets.top }}>
+      <View style={{ paddingTop: insets.top, flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {/* TITOLO DELL'APP */}
           <View style={styles.headerTitles}>
             <Text style={styles.title}>{t.app_title}</Text>
-            <Text>{t.info_btn}</Text>
+            <TouchableOpacity onPress={() => router.push("/settings")}>
+              <Settingsbutton width={30} height={30} />
+            </TouchableOpacity>
           </View>
 
-          {/* --- INIZIO AREA CARD SETUP --- */}
           <View style={styles.cards}>
             {/* CARD LAVORO */}
             <View style={styles.card}>
@@ -198,7 +218,6 @@ export default function SetupScreen() {
             </View>
           </View>
 
-          {/* BOTTONE DI AVVIO E DURATA TOTALE */}
           <View style={styles.playButton}>
             <TouchableOpacity onPress={handleStart}>
               <Playbutton width={80} height={80} />

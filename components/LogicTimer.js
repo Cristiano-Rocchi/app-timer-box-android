@@ -1,8 +1,8 @@
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
-import { Text, Vibration, View } from "react-native";
+import { Platform, Text, Vibration, View } from "react-native"; // Aggiunto Platform
 import { styles } from "../constants/styleTimer";
-import { translations } from "../constants/translations"; // t minuscola come hai detto
+import { translations } from "../constants/translations";
 
 export default function LogicTimer({
   workTime,
@@ -12,14 +12,17 @@ export default function LogicTimer({
   currentRound,
   totalRounds,
   lang,
+  isSoundEnabled,
+  isVibrationEnabled,
 }) {
   const [phase, setPhase] = useState("WORK");
   const [timeLeft, setTimeLeft] = useState(workTime);
 
-  // Fallback su jp visto che ti piace testare quello!
   const t = translations[lang] || translations["eng"];
 
   async function playSound(type) {
+    if (!isSoundEnabled) return;
+
     try {
       const file =
         type === "bell"
@@ -55,7 +58,17 @@ export default function LogicTimer({
       }, 1000);
     } else if (timeLeft === 0) {
       playSound("bell");
-      Vibration.vibrate(600);
+
+      // --- VIBRAZIONE OTTIMIZZATA ---
+      if (isVibrationEnabled) {
+        console.log("Comando vibrazione inviato!");
+        if (Platform.OS === "android") {
+          // Android risponde meglio a un array [attesa, durata]
+          Vibration.vibrate([0, 600]);
+        } else {
+          Vibration.vibrate(600);
+        }
+      }
 
       if (phase === "WORK") {
         setPhase("REST");
@@ -68,7 +81,7 @@ export default function LogicTimer({
     }
 
     return () => clearInterval(interval);
-  }, [timeLeft, isPaused, phase]);
+  }, [timeLeft, isPaused, phase, isVibrationEnabled]); // Aggiunta dipendenza per sicurezza
 
   return (
     <View
@@ -82,7 +95,6 @@ export default function LogicTimer({
     >
       <Text style={styles.countdownNumber}>{formatTime(timeLeft)}</Text>
 
-      {/* QUI USA LE CHIAVI round E rest */}
       <Text style={styles.prepareText}>
         {phase === "WORK" ? t.round : t.rest}{" "}
         <Text style={{ fontWeight: "bold" }}>{currentRound}</Text>/{totalRounds}

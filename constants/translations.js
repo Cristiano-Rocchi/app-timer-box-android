@@ -1,5 +1,3 @@
-// constants/Translations.js
-
 export const translations = {
   eng: {
     app_title: "BOXING TIMER",
@@ -21,6 +19,12 @@ export const translations = {
     exit_message: "Do you really want to leave the workout?",
     yes: "YES",
     no: "NO",
+    // Settings
+    settings_title: "SETTINGS",
+    back: "Back",
+    lang_label: "Language",
+    sound_label: "Sounds",
+    vibration_label: "Vibrations",
   },
   ita: {
     app_title: "BOXING TIMER",
@@ -42,6 +46,12 @@ export const translations = {
     exit_message: "Vuoi davvero lasciare l'allenamento?",
     yes: "SI",
     no: "NO",
+    // Settings
+    settings_title: "IMPOSTAZIONI",
+    back: "Torna indietro",
+    lang_label: "Lingua",
+    sound_label: "Suoni",
+    vibration_label: "Vibrazioni",
   },
   esp: {
     app_title: "CRONÓMETRO BOXEO",
@@ -63,6 +73,12 @@ export const translations = {
     exit_message: "¿Realmente quieres dejar el entrenamiento?",
     yes: "SÍ",
     no: "NO",
+    // Settings
+    settings_title: "AJUSTES",
+    back: "Atrás",
+    lang_label: "Idioma",
+    sound_label: "Sonidos",
+    vibration_label: "Vibraciones",
   },
   pt: {
     app_title: "TIMER DE BOXE",
@@ -84,6 +100,12 @@ export const translations = {
     exit_message: "Você realmente quer sair do treino?",
     yes: "SIM",
     no: "NÃO",
+    // Settings
+    settings_title: "CONFIGURAÇÕES",
+    back: "Voltar",
+    lang_label: "Idioma",
+    sound_label: "Sons",
+    vibration_label: "Vibrações",
   },
   fr: {
     app_title: "TIMER DE BOXE",
@@ -105,6 +127,12 @@ export const translations = {
     exit_message: "Voulez-vous vraiment quitter l'entraînement ?",
     yes: "OUI",
     no: "NON",
+    // Settings
+    settings_title: "PARAMÈTRES",
+    back: "Retour",
+    lang_label: "Langue",
+    sound_label: "Sons",
+    vibration_label: "Vibrations",
   },
   de: {
     app_title: "BOX TIMER",
@@ -126,6 +154,12 @@ export const translations = {
     exit_message: "Möchten Sie das Training wirklich verlassen?",
     yes: "JA",
     no: "NEIN",
+    // Settings
+    settings_title: "EINSTELLUNGEN",
+    back: "Zurück",
+    lang_label: "Sprache",
+    sound_label: "Töne",
+    vibration_label: "Vibrationen",
   },
   jp: {
     app_title: "ボクシングタイマー",
@@ -147,6 +181,12 @@ export const translations = {
     exit_message: "本当にトレーニングを終了しますか？",
     yes: "はい",
     no: "いいえ",
+    // Settings
+    settings_title: "設定",
+    back: "戻る",
+    lang_label: "言語",
+    sound_label: "サウンド",
+    vibration_label: "バイブレーション",
   },
   ru: {
     app_title: "БОКСЕРСКИЙ ТАЙМЕР",
@@ -168,5 +208,11 @@ export const translations = {
     exit_message: "Вы действительно хотите прервать тренировку?",
     yes: "ДА",
     no: "НЕТ",
+    // Settings
+    settings_title: "НАСТРОЙКИ",
+    back: "Назад",
+    lang_label: "Язык",
+    sound_label: "Звуки",
+    vibration_label: "Вибрация",
   },
 };

@@ -4,14 +4,22 @@ import { Text, Vibration, View } from "react-native";
 import { styles } from "../constants/styleTimer";
 import { translations } from "../constants/translations";
 
-export default function LogicPreTimer({ onFinish, isPaused, lang }) {
-  // RICEVE LANG
+// Aggiungiamo isSoundEnabled e isVibrationEnabled alle props
+export default function LogicPreTimer({
+  onFinish,
+  isPaused,
+  lang,
+  isSoundEnabled,
+  isVibrationEnabled,
+}) {
   const [timeLeft, setTimeLeft] = useState(5);
 
-  // Recuperiamo le traduzioni
   const t = translations[lang] || translations["eng"];
 
   async function playSound(type) {
+    // --- PASSO 3: Se l'audio è disattivato, esci subito ---
+    if (!isSoundEnabled) return;
+
     try {
       const file =
         type === "beep"
@@ -39,7 +47,12 @@ export default function LogicPreTimer({ onFinish, isPaused, lang }) {
       }, 1000);
     } else if (timeLeft === 0 && !isPaused) {
       playSound("bell");
-      Vibration.vibrate(600);
+
+      // --- PASSO 3: Se la vibrazione è attiva, vibra ---
+      if (isVibrationEnabled) {
+        Vibration.vibrate(600);
+      }
+
       timeout = setTimeout(() => {
         onFinish();
       }, 1000);
@@ -54,10 +67,8 @@ export default function LogicPreTimer({ onFinish, isPaused, lang }) {
   return (
     <View style={styles.preTimerContent}>
       <Text style={styles.countdownNumber}>
-        {/* TRADOTTO: VAI! */}
         {timeLeft === 0 ? t.go : timeLeft}
       </Text>
-      {/* TRADOTTO: PREPARATI */}
       <Text style={styles.prepareText}>{t.prepare}</Text>
     </View>
   );

@@ -1,6 +1,8 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BackHandler, Text, TouchableOpacity, View } from "react-native";
+
 import Pausebutton from "../assets/icons/Pause.svg";
 import Playbutton from "../assets/icons/Play.svg";
 import AlertExit from "../components/alertExit";
@@ -18,9 +20,10 @@ export default function TimerScreen() {
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
 
-  // Gestione Lingua (Per ora fissa, poi la prenderemo da params o storage)
-  const lang = "jp";
-  const t = translations[lang];
+  // --- RECUPERO LINGUA DAI PARAMETRI ---
+  // Se per qualche motivo non arriva, usiamo "eng" come fallback
+  const lang = params.lang || "eng";
+  const t = translations[lang] || translations["eng"];
 
   const [phase, setPhase] = useState("PREPARING");
   const [currentRound, setCurrentRound] = useState(1);
@@ -28,9 +31,35 @@ export default function TimerScreen() {
   const [showAlert, setShowAlert] = useState(false);
   const [wasPausedBeforeAlert, setWasPausedBeforeAlert] = useState(false);
 
+  // --- STATI IMPOSTAZIONI ---
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const [isVibrationEnabled, setIsVibrationEnabled] = useState(true);
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+
   const totalRounds = parseInt(params.rounds);
   const workTime = parseInt(params.workTime);
   const restTime = parseInt(params.restTime);
+
+  // --- CARICAMENTO IMPOSTAZIONI ---
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const savedData = await AsyncStorage.getItem("@app_settings");
+        if (savedData !== null) {
+          const parsed = JSON.parse(savedData);
+          setIsSoundEnabled(parsed.sound);
+          setIsVibrationEnabled(parsed.vibration);
+          // Nota: la lingua la prendiamo dai params per coerenza con la navigazione,
+          // ma potresti anche caricarla da qui se preferisci.
+        }
+      } catch (e) {
+        console.log("Errore lettura impostazioni:", e);
+      } finally {
+        setIsLoadingSettings(false);
+      }
+    };
+    loadSettings();
+  }, []);
 
   const handleBackAttempt = () => {
     if (phase === "FINISHED" || phase === "PREPARING") {
@@ -66,12 +95,16 @@ export default function TimerScreen() {
     }
   };
 
+  if (isLoadingSettings) {
+    return <BackgroundView />;
+  }
+
   return (
     <BackgroundView>
       <View style={{ flex: 1, paddingTop: insets.top }}>
         <AlertExit
           visible={showAlert}
-          lang={lang}
+          lang={lang} // Passiamo la lingua all'alert
           onConfirm={() => router.replace("/")}
           onCancel={() => {
             setShowAlert(false);
@@ -83,14 +116,18 @@ export default function TimerScreen() {
           <TouchableOpacity onPress={handleBackAttempt}>
             <Text style={styles.title}>&lt;</Text>
           </TouchableOpacity>
-          {/* TRADOTTO: ALLENAMENTO */}
           <Text style={styles.title}>{t.training_title}</Text>
           <View style={{ width: 22 }} />
         </View>
 
         <View style={styles.Content}>
           {phase === "PREPARING" && (
-            <LogicPretimer onFinish={handlePreTimerFinish} lang={lang} />
+            <LogicPretimer
+              onFinish={handlePreTimerFinish}
+              lang={lang} // Passiamo la lingua
+              isSoundEnabled={isSoundEnabled}
+              isVibrationEnabled={isVibrationEnabled}
+            />
           )}
 
           {phase === "WORKOUT" && (
@@ -101,13 +138,14 @@ export default function TimerScreen() {
               onRoundComplete={handleRoundComplete}
               currentRound={currentRound}
               totalRounds={totalRounds}
-              lang={lang} // PASSIAMO LA LINGUA AL COMPONENTE LOGIC
+              lang={lang} // Passiamo la lingua
+              isSoundEnabled={isSoundEnabled}
+              isVibrationEnabled={isVibrationEnabled}
             />
           )}
 
           {phase === "FINISHED" && (
             <View style={styles.preTimerContent}>
-              {/* TRADOTTO: FINE e OTTIMO LAVORO */}
               <Text style={styles.countdownNumber}>{t.finish_state}</Text>
               <Text style={styles.prepareText}>{t.great_job}</Text>
             </View>
@@ -135,12 +173,12 @@ export default function TimerScreen() {
                     {
                       backgroundColor: Colors.primary,
                       fontSize: 20,
-                      padding: 8,
+                      padding: 12, // Un po' più di spazio
                       borderRadius: 8,
+                      overflow: "hidden", // Per i bordi su iOS
                     },
                   ]}
                 >
-                  {/* TRADOTTO: TORNA ALLA HOME */}
                   {t.back_home}
                 </Text>
               </TouchableOpacity>
